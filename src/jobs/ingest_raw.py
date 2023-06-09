@@ -23,7 +23,7 @@ if __name__ == '__main__':
     url = "https://justjoin.it/feed.atom"
     response = requests.get(url=url)
 
-    upload_file_to_s3(file_name='../../test.xml', bucket_name='job-parse-raw')
-
     with open('../../test.xml', 'w', encoding='utf-8') as file:
         file.write(response.text)
+
+    upload_file_to_s3(file_name='../../test.xml', bucket_name='job-parse-raw')
