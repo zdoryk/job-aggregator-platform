@@ -4,7 +4,7 @@ import boto3
 
 
 def get_aws_credentials() -> tuple:
-    with open('my_keys.csv', 'r') as input_file:
+    with open('../../my_keys.csv', 'r') as input_file:
         reader = csv.reader(input_file)
         next(reader)  # skip first line (header)
         line = next(reader)  # read the next line
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     url = "https://justjoin.it/feed.atom"
     response = requests.get(url=url)
 
-    upload_file_to_s3(file_name='test.xml', bucket_name='job-parse-raw')
+    upload_file_to_s3(file_name='../../test.xml', bucket_name='job-parse-raw')
 
-    with open('test.xml', 'w', encoding='utf-8') as file:
+    with open('../../test.xml', 'w', encoding='utf-8') as file:
         file.write(response.text)
