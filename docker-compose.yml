@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  dremio:
+    platform: linux/x86_64
+    image: dremio/dremio-oss:latest
+    ports:
+      - 9047:9047
+      - 31010:31010
+      - 32010:32010
+    container_name: dremio
+
+  minioserver:
+    image: minio/minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    container_name: minio
+    command: server /data --console-address ":9001"
+
+  spark_notebook:
+    image: alexmerced/spark33-notebook
+    ports:
+      - 8888:8888
+    env_file: .env
+    container_name: notebook
+
+  nessie:
+    image: ghcr.io/projectnessie/nessie:latest
+    ports:
+      - "19120:19120"
+    depends_on:
+      - dynamodb
+    environment:
+      - nessie.version.store.type=DYNAMODB
+      - quarkus.dynamodb.endpoint-override=http://dynamodb:8000
+      - quarkus.dynamodb.aws.region=us-west-2
+      - quarkus.dynamodb.aws.credentials.type=STATIC
+      - quarkus.dynamodb.aws.credentials.static-provider.access-key-id=fakeKeyId
+      - quarkus.dynamodb.aws.credentials.static-provider.secret-access-key=fakeSecretAccessKey
+  dynamodb:
+    image: amazon/dynamodb-local
+    ports:
+      - "8000:8000"
+
+networks:
+  default:
+    name: iceberg_env
+    driver: bridge
